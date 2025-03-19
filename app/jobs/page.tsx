@@ -1,9 +1,12 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { Search, Building, MapPin, Calendar, Briefcase, ExternalLink } from "lucide-react"
+"use client";
+
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Search, Building, MapPin, Calendar, Briefcase, ExternalLink } from "lucide-react";
 import {
   Pagination,
   PaginationContent,
@@ -12,36 +15,30 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/components/ui/pagination"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-
-// 실제 구현 시에는 API에서 데이터를 가져옵니다
-const jobs = Array.from({ length: 12 }).map((_, i) => ({
-  id: i + 1,
-  title: [
-    "프론트엔드 개발자",
-    "백엔드 개발자",
-    "풀스택 개발자",
-    "모바일 앱 개발자",
-    "데이터 엔지니어",
-    "DevOps 엔지니어",
-  ][i % 6],
-  company: ["네이버", "카카오", "라인", "쿠팡", "우아한형제들", "토스"][i % 6],
-  location: ["서울", "경기", "부산", "대전", "제주"][i % 5],
-  experience: ["신입", "1~3년", "3~5년", "5년 이상"][i % 4],
-  employmentType: ["정규직", "계약직", "인턴"][i % 3],
-  deadline: `2023-${11 + (i % 2)}-${10 + (i % 20)}`,
-  skills: [
-    ["React", "TypeScript", "Next.js"],
-    ["Java", "Spring", "MySQL"],
-    ["JavaScript", "Node.js", "MongoDB"],
-    ["Swift", "Kotlin", "Flutter"],
-    ["Python", "Spark", "Hadoop"],
-    ["Docker", "Kubernetes", "AWS"],
-  ][i % 6],
-}))
+} from "@/components/ui/pagination";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { fetchJobPostings } from "@/utils/api";
 
 export default function JobsPage() {
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchJobPostings()
+      .then((data) => {
+        setJobs(data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching job postings:", error);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className="container py-8">
       <div className="flex flex-col gap-6">
@@ -49,7 +46,9 @@ export default function JobsPage() {
           <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
             채용 공고
           </h1>
-          <p className="text-muted-foreground">사람인에서 제공하는 최신 IT 채용 정보를 확인하고 지원하세요.</p>
+          <p className="text-muted-foreground">
+            사람인에서 제공하는 최신 IT 채용 정보를 확인하고 지원하세요.
+          </p>
         </div>
 
         {/* 검색 및 필터 */}
@@ -88,13 +87,15 @@ export default function JobsPage() {
 
         {/* 채용 공고 목록 */}
         <div className="grid gap-4">
-          {jobs.map((job) => (
-            <Card className="gradient-card" key={job.id}>
+          {jobs.map((job: any) => (
+            <Card key={job.id} className="gradient-card">
               <CardHeader>
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-lg">{job.title}</CardTitle>
-                    <Badge className="bg-secondary hover:bg-secondary/80">{job.employmentType}</Badge>
+                    <Badge className="bg-secondary hover:bg-secondary/80">
+                      {job.employmentType}
+                    </Badge>
                   </div>
                   <div className="flex items-center gap-2">
                     <Building className="h-4 w-4 text-muted-foreground" />
@@ -117,7 +118,7 @@ export default function JobsPage() {
                     <span>마감일: {job.deadline}</span>
                   </div>
                   <div className="mt-2 flex flex-wrap gap-2">
-                    {job.skills.map((skill) => (
+                    {job.skills.map((skill: string) => (
                       <Badge key={skill} variant="outline" className="bg-background/50">
                         {skill}
                       </Badge>
@@ -140,7 +141,7 @@ export default function JobsPage() {
           ))}
         </div>
 
-        {/* 페이지네이션 */}
+        {/* 페이지네이션 (예시) */}
         <Pagination>
           <PaginationContent>
             <PaginationItem>
@@ -167,6 +168,5 @@ export default function JobsPage() {
         </Pagination>
       </div>
     </div>
-  )
+  );
 }
-

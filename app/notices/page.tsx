@@ -1,8 +1,11 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { ExternalLink, Search, Calendar } from "lucide-react"
+"use client";
+
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { ExternalLink, Search, Calendar } from "lucide-react";
 import {
   Pagination,
   PaginationContent,
@@ -11,19 +14,30 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/components/ui/pagination"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-
-// 실제 구현 시에는 API에서 데이터를 가져옵니다
-const notices = Array.from({ length: 20 }).map((_, i) => ({
-  id: i + 1,
-  title: `SW중심대학 ${i + 1}차 산학프로젝트 참여기업 모집 안내`,
-  date: `2023-${Math.floor(Math.random() * 12) + 1}-${Math.floor(Math.random() * 28) + 1}`,
-  description: "SW중심대학 산학프로젝트에 참여할 기업을 모집합니다. 관심 있는 기업은 신청 바랍니다.",
-  url: "https://example.com/notice",
-}))
+} from "@/components/ui/pagination";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { fetchSwNotices } from "@/utils/api";
 
 export default function NoticesPage() {
+  const [notices, setNotices] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchSwNotices()
+      .then((data) => {
+        setNotices(data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching notices:", error);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className="container py-8">
       <div className="flex flex-col gap-6">
@@ -31,7 +45,9 @@ export default function NoticesPage() {
           <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
             공지사항
           </h1>
-          <p className="text-muted-foreground">SW중심사업단에서 제공하는 최신 공지사항과 이벤트 정보를 확인하세요.</p>
+          <p className="text-muted-foreground">
+            SW중심사업단에서 제공하는 최신 공지사항과 이벤트 정보를 확인하세요.
+          </p>
         </div>
 
         {/* 검색 및 필터 */}
@@ -63,15 +79,17 @@ export default function NoticesPage() {
 
         {/* 공지사항 목록 */}
         <div className="grid gap-4">
-          {notices.map((notice) => (
-            <Card className="gradient-card" key={notice.id}>
+          {notices.map((notice: any) => (
+            <Card key={notice.id} className="gradient-card">
               <CardHeader>
                 <CardTitle className="text-lg">{notice.title}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex flex-col gap-2">
                   <p className="text-sm text-muted-foreground">{notice.description}</p>
-                  <p className="text-xs text-muted-foreground">등록일: {notice.date}</p>
+                  <p className="text-xs text-muted-foreground">
+                    등록일: {new Date(notice.createdDate).toLocaleDateString()}
+                  </p>
                 </div>
               </CardContent>
               <CardFooter className="flex justify-between">
@@ -82,7 +100,7 @@ export default function NoticesPage() {
                   </Link>
                 </Button>
                 <Button variant="ghost" size="sm" asChild>
-                  <a href={notice.url} target="_blank" rel="noopener noreferrer">
+                  <a href={notice.link} target="_blank" rel="noopener noreferrer">
                     원문 보기
                   </a>
                 </Button>
@@ -91,7 +109,7 @@ export default function NoticesPage() {
           ))}
         </div>
 
-        {/* 페이지네이션 */}
+        {/* 페이지네이션 (예시) */}
         <Pagination>
           <PaginationContent>
             <PaginationItem>
@@ -118,6 +136,5 @@ export default function NoticesPage() {
         </Pagination>
       </div>
     </div>
-  )
+  );
 }
-

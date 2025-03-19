@@ -8,6 +8,7 @@ import { Menu, User } from "lucide-react"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { ThemeToggle } from "./theme-toggle"
+import Swal from "sweetalert2"
 
 const navigation = [
   { name: "홈", href: "/" },
@@ -21,6 +22,21 @@ const navigation = [
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false)
   const pathname = usePathname()
+
+  const handleNavClick = (href: string) => (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (href === "/jobs") {
+      // 기본 링크 이동 방지 후 SweetAlert 띄우기
+      e.preventDefault()
+      Swal.fire({
+        icon: "info",
+        title: "준비중입니다",
+        text: "채용공고 페이지는 준비중입니다.",
+        confirmButtonText: "확인",
+      })
+      // 모바일 메뉴가 열려 있다면 닫기
+      setIsOpen(false)
+    }
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm">
@@ -40,9 +56,9 @@ export default function Header() {
                     href={item.href}
                     className={cn(
                       "text-lg font-medium transition-colors hover:text-primary",
-                      pathname === item.href ? "text-primary" : "text-muted-foreground",
+                      pathname === item.href ? "text-primary" : "text-muted-foreground"
                     )}
-                    onClick={() => setIsOpen(false)}
+                    onClick={handleNavClick(item.href)}
                   >
                     {item.name}
                   </Link>
@@ -71,8 +87,9 @@ export default function Header() {
               href={item.href}
               className={cn(
                 "text-sm font-medium transition-colors hover:text-primary",
-                pathname === item.href ? "text-primary" : "text-muted-foreground",
+                pathname === item.href ? "text-primary" : "text-muted-foreground"
               )}
+              onClick={handleNavClick(item.href)}
             >
               {item.name}
             </Link>
@@ -99,4 +116,3 @@ export default function Header() {
     </header>
   )
 }
-
