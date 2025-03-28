@@ -10,10 +10,12 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { AlertCircle } from "lucide-react"
-import { login } from "@/utils/api" // 수정된 API 함수 임포트
+import { login as loginAPI } from "@/utils/api"
+import { useAuth } from "@/context/AuthContext"
 
 export default function LoginPage() {
   const router = useRouter()
+  const { login } = useAuth()
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
@@ -25,11 +27,10 @@ export default function LoginPage() {
     setError(null)
 
     try {
-      const data = await login(username, password)
-      // 받은 토큰을 localStorage 등에 저장 (필요 시)
-      localStorage.setItem("token", data.token)
-      
-      // 관리자 아이디이면 관리자 페이지로 이동, 그 외는 홈으로 이동
+      const data = await loginAPI(username, password)
+      // 전역 상태 업데이트
+      login(data.token)
+      // 관리자라면 관리자 페이지로, 그 외는 홈으로 이동
       if (username === "admin") {
         router.push("/admin/jobs")
       } else {

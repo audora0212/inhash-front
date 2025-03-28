@@ -1,4 +1,3 @@
-// utils/api.tsx
 const API_BASE_URL = "http://localhost:8080/api"; // 필요 시 IP/포트를 수정하세요.
 
 export async function login(username: string, password: string) {
@@ -7,7 +6,6 @@ export async function login(username: string, password: string) {
     headers: {
       "Content-Type": "application/json",
     },
-    // username과 password를 payload에 포함
     body: JSON.stringify({ username, password }),
   });
   if (!res.ok) {
@@ -32,7 +30,6 @@ export async function register(user: { email: string; username: string; password
   return res.json();
 }
 
-// (기존 API 함수들은 그대로 유지)
 export async function fetchSwNotices() {
   const res = await fetch(`${API_BASE_URL}/sw-notices`);
   if (!res.ok) {

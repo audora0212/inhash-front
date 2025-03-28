@@ -1,14 +1,15 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Menu, User } from "lucide-react"
-import { usePathname } from "next/navigation"
-import { cn } from "@/lib/utils"
-import { ThemeToggle } from "./theme-toggle"
-import Swal from "sweetalert2"
+import Link from "next/link";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Menu, User } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
+import { ThemeToggle } from "./theme-toggle";
+import Swal from "sweetalert2";
+import { useAuth } from "@/context/AuthContext";
 
 const navigation = [
   { name: "홈", href: "/" },
@@ -17,26 +18,30 @@ const navigation = [
   { name: "인턴십", href: "/internships" },
   { name: "커뮤니티", href: "/community" },
   { name: "채용공고", href: "/jobs" },
-]
+];
 
 export default function Header() {
-  const [isOpen, setIsOpen] = useState(false)
-  const pathname = usePathname()
+  const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
+  const router = useRouter();
+  const { isLoggedIn, logout } = useAuth();
 
   const handleNavClick = (href: string) => (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (href === "/jobs") {
-      // 기본 링크 이동 방지 후 SweetAlert 띄우기
-      e.preventDefault()
+      e.preventDefault();
       Swal.fire({
         icon: "info",
         title: "준비중입니다",
         text: "채용공고 페이지는 준비중입니다.",
         confirmButtonText: "확인",
-      })
-      // 모바일 메뉴가 열려 있다면 닫기
-      setIsOpen(false)
+      });
+      setIsOpen(false);
     }
-  }
+  };
+
+  const handleLogout = () => {
+    logout();
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm">
@@ -64,12 +69,20 @@ export default function Header() {
                   </Link>
                 ))}
                 <div className="flex items-center gap-2 mt-4">
-                  <Button variant="outline" size="sm" asChild>
-                    <Link href="/login">로그인</Link>
-                  </Button>
-                  <Button size="sm" asChild>
-                    <Link href="/register">회원가입</Link>
-                  </Button>
+                  {!isLoggedIn ? (
+                    <>
+                      <Button variant="outline" size="sm" asChild>
+                        <Link href="/login">로그인</Link>
+                      </Button>
+                      <Button size="sm" asChild>
+                        <Link href="/register">회원가입</Link>
+                      </Button>
+                    </>
+                  ) : (
+                    <Button size="sm" onClick={handleLogout}>
+                      로그아웃
+                    </Button>
+                  )}
                 </div>
               </nav>
             </SheetContent>
@@ -98,21 +111,31 @@ export default function Header() {
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <div className="hidden sm:flex items-center gap-2">
-            <Button variant="outline" size="sm" asChild>
-              <Link href="/login">로그인</Link>
-            </Button>
-            <Button size="sm" asChild>
-              <Link href="/register">회원가입</Link>
-            </Button>
+            {!isLoggedIn ? (
+              <>
+                <Button variant="outline" size="sm" asChild>
+                  <Link href="/login">로그인</Link>
+                </Button>
+                <Button size="sm" asChild>
+                  <Link href="/register">회원가입</Link>
+                </Button>
+              </>
+            ) : (
+              <Button size="sm" onClick={handleLogout}>
+                로그아웃
+              </Button>
+            )}
           </div>
-          <Button variant="ghost" size="icon" className="hidden sm:flex" asChild>
-            <Link href="/profile">
-              <User className="h-5 w-5" />
-              <span className="sr-only">프로필</span>
-            </Link>
-          </Button>
+          {isLoggedIn && (
+            <Button variant="ghost" size="icon" className="hidden sm:flex" asChild>
+              <Link href="/profile">
+                <User className="h-5 w-5" />
+                <span className="sr-only">프로필</span>
+              </Link>
+            </Button>
+          )}
         </div>
       </div>
     </header>
-  )
+  );
 }
