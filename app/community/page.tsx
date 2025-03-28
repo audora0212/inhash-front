@@ -20,7 +20,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { fetchPosts } from "@/utils/api";
 
 export default function CommunityPage() {
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -40,7 +40,7 @@ export default function CommunityPage() {
     return <div>Loading...</div>;
   }
 
-  const filteredPosts = posts.filter((post: any) =>
+  const filteredPosts = posts.filter((post) =>
     post.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -82,44 +82,44 @@ export default function CommunityPage() {
 
         {/* 게시글 목록 */}
         <div className="grid gap-4">
-          {filteredPosts.map((post: any) => (
-            <Card key={post.id} className="gradient-card">
-              <CardHeader>
-                <div className="flex flex-col gap-2">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg">
-                      <Link href={`/community/${post.id}`} className="hover:underline">
-                        {post.title}
-                      </Link>
-                    </CardTitle>
-                    <Badge variant="outline">{post.category}</Badge>
+          {filteredPosts.map((post) => (
+            <Link key={post.id} href={`/community/${post.id}`} className="block">
+              <Card className="gradient-card cursor-pointer">
+                <CardHeader>
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-lg">{post.title}</CardTitle>
+                      <Badge variant="outline">{post.category}</Badge>
+                    </div>
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                      <span>{post.author}</span>
+                      {/* createdDate를 사용하여 날짜 표기 */}
+                      <span>{new Date(post.createdDate).toLocaleDateString()}</span>
+                    </div>
                   </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground line-clamp-2">{post.content}</p>
+                </CardContent>
+                <CardFooter>
                   <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                    <span>{post.author}</span>
-                    <span>{new Date(post.date).toLocaleDateString()}</span>
+                    <div className="flex items-center gap-1">
+                      <Eye className="h-4 w-4" />
+                      <span>{post.viewCount}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <ThumbsUp className="h-4 w-4" />
+                      <span>{post.likeCount}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <MessageSquare className="h-4 w-4" />
+                      {/* 댓글이 배열인 경우 길이를 출력 */}
+                      <span>{Array.isArray(post.comments) ? post.comments.length : 0}</span>
+                    </div>
                   </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground line-clamp-2">{post.content}</p>
-              </CardContent>
-              <CardFooter>
-                <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                  <div className="flex items-center gap-1">
-                    <Eye className="h-4 w-4" />
-                    <span>{post.views}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <ThumbsUp className="h-4 w-4" />
-                    <span>{post.likes}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <MessageSquare className="h-4 w-4" />
-                    <span>{post.comments}</span>
-                  </div>
-                </div>
-              </CardFooter>
-            </Card>
+                </CardFooter>
+              </Card>
+            </Link>
           ))}
         </div>
 

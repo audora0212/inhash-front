@@ -69,3 +69,35 @@ export async function fetchJobPostings() {
   }
   return res.json();
 }
+
+export async function fetchPostById(postId: string) {
+  const res = await fetch(`${API_BASE_URL}/posts/${postId}`);
+  if (!res.ok) {
+    throw new Error("Failed to fetch post details");
+  }
+  return res.json();
+}
+
+export async function likePost(postId: string) {
+  const res = await fetch(`${API_BASE_URL}/posts/${postId}/like`, {
+    method: "POST",
+  });
+  if (!res.ok) {
+    throw new Error("Failed to like post");
+  }
+  return res.json();
+}
+
+export async function addComment(postId: string, comment: { content: string; author: string }) {
+  const res = await fetch(`${API_BASE_URL}/posts/${postId}/comments`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(comment),
+  });
+  if (!res.ok) {
+    throw new Error("Failed to add comment");
+  }
+  return res.json();
+}
