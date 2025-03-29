@@ -10,13 +10,17 @@ import { Separator } from "@/components/ui/separator"
 import { Textarea } from "@/components/ui/textarea"
 import { ChevronLeft, ThumbsUp, Eye, MessageSquare, Send, Share2 } from "lucide-react"
 
-// API 함수들은 별도의 api 파일에 정의되어 있다고 가정합니다.
+// API 함수 임포트 (토큰 파라미터를 받도록 수정되었다고 가정)
 import { fetchPostById, likePost, addComment } from "@/utils/api"
+
+// 인증 컨텍스트 임포트
+import { useAuth } from "@/context/AuthContext"
 
 export default function PostDetailPage() {
   const params = useParams()
   const router = useRouter()
   const postId = params.id as string
+  const { token, user } = useAuth()
 
   const [post, setPost] = useState<any>(null)
   const [loading, setLoading] = useState(true)
@@ -29,7 +33,7 @@ export default function PostDetailPage() {
       fetchPostById(postId)
         .then((data) => {
           setPost(data)
-          // 백엔드에서 Post 엔티티의 필드명이 comments입니다.
+          // 백엔드에서 Post 엔티티의 필드명이 comments로 되어 있음
           setComments(data.comments || [])
           setLoading(false)
         })
@@ -41,9 +45,10 @@ export default function PostDetailPage() {
   }, [postId])
 
   const handleLike = async () => {
-    if (!liked && post) {
+    if (!liked && post && token) {
       try {
-        const updatedPost = await likePost(postId)
+        // 토큰이 필요한 경우 likePost 함수에 token 전달
+        const updatedPost = await likePost(postId, token)
         setLiked(true)
         setPost(updatedPost)
       } catch (error) {
@@ -53,13 +58,10 @@ export default function PostDetailPage() {
   }
 
   const handleAddComment = async () => {
-    if (comment.trim() && post) {
+    if (comment.trim() && post && token && user) {
       try {
-        const newComment = await addComment(postId, {
-          content: comment,
-          author: "현재 사용자", // 실제 사용자 정보는 auth context에서 가져오면 됩니다.
-        })
-
+        // 댓글 작성 시 API 호출 시 토큰과 실제 사용자 정보를 함께 전달
+        const newComment = await addComment(postId, { content: comment, author: user }, token)
         // 새 댓글을 댓글 배열에 추가
         setComments([...comments, newComment])
         // 게시글 객체 내 댓글 목록도 업데이트
@@ -71,6 +73,9 @@ export default function PostDetailPage() {
       } catch (error) {
         console.error("Error adding comment:", error)
       }
+    } else if (!token || !user) {
+      // 로그인하지 않은 경우 로그인 페이지로 리다이렉트
+      router.push("/login")
     }
   }
 
@@ -85,13 +90,13 @@ export default function PostDetailPage() {
   return (
     <div className="container py-8">
       <div className="flex flex-col gap-6 max-w-4xl mx-auto">
-        {/* Back button */}
+        {/* 목록으로 돌아가기 버튼 */}
         <Button variant="ghost" className="w-fit" onClick={() => router.back()}>
           <ChevronLeft className="mr-2 h-4 w-4" />
           목록으로 돌아가기
         </Button>
 
-        {/* Post detail card */}
+        {/* 게시글 상세 카드 */}
         <Card className="gradient-card">
           <CardHeader>
             <div className="flex flex-col gap-3">
@@ -140,12 +145,11 @@ export default function PostDetailPage() {
           </CardFooter>
         </Card>
 
-        {/* Comments section */}
+        {/* 댓글 섹션 */}
         <div className="flex flex-col gap-4">
           <h2 className="text-xl font-bold">댓글</h2>
           <Separator />
-
-          {/* Comment list */}
+          {/* 댓글 목록 */}
           <div className="flex flex-col gap-4">
             {comments.length === 0 ? (
               <p className="text-muted-foreground text-center py-4">첫 번째 댓글을 작성해보세요!</p>
@@ -170,7 +174,7 @@ export default function PostDetailPage() {
             )}
           </div>
 
-          {/* Add comment */}
+          {/* 댓글 작성 */}
           <div className="flex flex-col gap-2 mt-4">
             <h3 className="text-sm font-medium">댓글 작성</h3>
             <div className="flex gap-2">

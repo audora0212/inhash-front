@@ -1,35 +1,45 @@
 "use client"
 
 import type React from "react"
-
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { createPost } from "@/utils/api"
+import { useAuth } from "@/context/AuthContext"
 
 export default function WritePage() {
   const router = useRouter()
+  const { token } = useAuth()
+
+  // 로그인 상태가 아니라면 로그인 페이지로 이동
+  useEffect(() => {
+    if (!token) {
+      router.push("/login")
+    }
+  }, [token, router])
+
   const [title, setTitle] = useState("")
   const [content, setContent] = useState("")
   const [category, setCategory] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
+    setError(null)
 
-    // 실제 구현 시에는 API를 호출하여 데이터를 저장합니다
     try {
-      // API 호출 시뮬레이션
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      // 성공 시 목록 페이지로 이동
+      // 토큰을 함께 전달합니다.
+      await createPost({ title, content, category }, token as string)
       router.push("/community")
-    } catch (error) {
-      console.error("Error submitting post:", error)
+    } catch (err: any) {
+      console.error("Error submitting post:", err)
+      setError(err.message || "게시글 작성에 실패했습니다.")
     } finally {
       setIsSubmitting(false)
     }
@@ -44,6 +54,7 @@ export default function WritePage() {
           </CardHeader>
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4">
+              {error && <p className="text-red-500">{error}</p>}
               <div className="space-y-2">
                 <label htmlFor="category" className="text-sm font-medium">
                   카테고리
@@ -101,4 +112,3 @@ export default function WritePage() {
     </div>
   )
 }
-
