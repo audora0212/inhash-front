@@ -12,7 +12,7 @@ export default function Home() {
         <div className="container px-4 md:px-6">
           <div className="flex flex-col items-center gap-4 text-center">
             <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">
-              인하대학교 소프트웨어 취업 정보 커뮤니티
+              소프트웨어 취업 정보 커뮤니티
             </h1>
             <p className="max-w-[700px] text-slate-700 dark:text-slate-300 md:text-xl">
               소프트웨어 관련 취업 정보, 공지사항, 공모전, 인턴십 정보를 한 곳에서 확인하세요.

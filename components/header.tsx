@@ -89,7 +89,7 @@ export default function Header() {
           </Sheet>
           <Link href="/" className="flex items-center space-x-2">
             <span className="font-bold text-xl bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              인하SW커뮤니티
+              INHASH
             </span>
           </Link>
         </div>

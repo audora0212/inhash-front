@@ -9,8 +9,11 @@ import { AuthProvider } from "../context/AuthContext";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "인하대학교 소프트웨어 취업 정보 커뮤니티",
-  description: "인하대학교 소프트웨어 관련 취업 정보 및 커뮤니티 플랫폼",
+  title: "INHASH",
+  description: "소프트웨어 관련 취업 정보 및 커뮤니티 플랫폼",  
+  icons: {
+    icon: '/logo.png',
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
