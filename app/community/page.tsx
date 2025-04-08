@@ -16,7 +16,6 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { fetchPosts } from "@/utils/api";
 
 export default function CommunityPage() {
@@ -89,11 +88,11 @@ export default function CommunityPage() {
                   <div className="flex flex-col gap-2">
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-lg">{post.title}</CardTitle>
-                      <Badge variant="outline">{post.category}</Badge>
+                      {post.category && <Badge variant="outline">{post.category}</Badge>}
                     </div>
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      <span>{post.author}</span>
-                      {/* createdDate를 사용하여 날짜 표기 */}
+                      {/* 작성자 정보가 이제 authorId */}
+                      <span>{post.authorId}</span>
                       <span>{new Date(post.createdDate).toLocaleDateString()}</span>
                     </div>
                   </div>
@@ -113,7 +112,6 @@ export default function CommunityPage() {
                     </div>
                     <div className="flex items-center gap-1">
                       <MessageSquare className="h-4 w-4" />
-                      {/* 댓글이 배열인 경우 길이를 출력 */}
                       <span>{Array.isArray(post.comments) ? post.comments.length : 0}</span>
                     </div>
                   </div>

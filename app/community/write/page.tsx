@@ -1,49 +1,49 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { createPost } from "@/utils/api"
-import { useAuth } from "@/context/AuthContext"
+import type React from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { createPost } from "@/utils/api";
+import { useAuth } from "@/context/AuthContext";
 
 export default function WritePage() {
-  const router = useRouter()
-  const { token } = useAuth()
+  const router = useRouter();
+  const { token } = useAuth();
 
   // 로그인 상태가 아니라면 로그인 페이지로 이동
   useEffect(() => {
     if (!token) {
-      router.push("/login")
+      router.push("/login");
     }
-  }, [token, router])
+  }, [token, router]);
 
-  const [title, setTitle] = useState("")
-  const [content, setContent] = useState("")
-  const [category, setCategory] = useState("")
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [category, setCategory] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
-    setError(null)
+    e.preventDefault();
+    setIsSubmitting(true);
+    setError(null);
 
     try {
-      // 토큰을 함께 전달합니다.
-      await createPost({ title, content, category }, token as string)
-      router.push("/community")
+      // 토큰을 포함하여 게시글 생성 API 호출 (백엔드에서는 현재 로그인한 사용자의 id를 authorId로 자동 처리)
+      await createPost({ title, content, category }, token as string);
+      router.push("/community");
     } catch (err: any) {
-      console.error("Error submitting post:", err)
-      setError(err.message || "게시글 작성에 실패했습니다.")
+      console.error("Error submitting post:", err);
+      setError(err.message || "게시글 작성에 실패했습니다.");
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <div className="container py-8">
@@ -110,5 +110,5 @@ export default function WritePage() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

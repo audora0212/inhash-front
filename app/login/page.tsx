@@ -28,8 +28,8 @@ export default function LoginPage() {
 
     try {
       const data = await loginAPI(username, password)
-      // 전역 상태 업데이트
-      login(data.token)
+      // 수정된 부분: 반환받은 data의 token과 user를 모두 전달합니다.
+      login(data.token, data.user)
       // 관리자라면 관리자 페이지로, 그 외는 홈으로 이동
       if (username === "admin") {
         router.push("/admin/jobs")

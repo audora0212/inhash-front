@@ -1,4 +1,3 @@
-//utils/api.tsx
 const API_BASE_URL = "http://localhost:8080/api"; // 필요 시 IP/포트를 수정하세요.
 
 export async function login(username: string, password: string) {
@@ -92,10 +91,9 @@ export async function likePost(postId: string, token: string) {
   return res.json();
 }
 
-
 export async function addComment(
   postId: string,
-  comment: { content: string; author?: string }, 
+  comment: { content: string; authorId: number }, 
   token: string
 ) {
   const res = await fetch(`${API_BASE_URL}/posts/${postId}/comments`, {
@@ -112,7 +110,6 @@ export async function addComment(
   return res.json();
 }
 
-
 export async function createPost(
   post: { title: string; content: string; category: string },
   token: string
@@ -121,7 +118,7 @@ export async function createPost(
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`,  // 토큰 포함
+      "Authorization": `Bearer ${token}`,
     },
     body: JSON.stringify(post),
   });
