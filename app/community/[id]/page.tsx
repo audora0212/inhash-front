@@ -34,6 +34,7 @@ export default function PostDetailPage() {
           setPost(data);
           setComments(data.comments || []);
           setLoading(false);
+          console.log(data)
         })
         .catch((error) => {
           console.error("Error fetching post details:", error);
@@ -55,17 +56,14 @@ export default function PostDetailPage() {
   };
 
   const handleAddComment = async () => {
-    // 만약 인증 로딩 중이면 제출하지 않음
     if (authLoading) {
       console.warn("인증 정보를 불러오는 중입니다. 잠시 후 다시 시도해 주세요.");
       return;
     }
-    // token이 없다면 로그인 페이지로 이동
     if (!token) {
       router.push("/login");
       return;
     }
-    // authLoading이 끝났는데 user 정보가 없다면 역시 로그인 처리
     if (!user) {
       router.push("/login");
       return;
@@ -114,10 +112,10 @@ export default function PostDetailPage() {
               <div className="flex items-center gap-4 text-sm text-muted-foreground">
                 <div className="flex items-center gap-2">
                   <Avatar className="h-6 w-6">
-                    <AvatarImage src="/placeholder-user.jpg" alt={String(post.authorId)} />
-                    <AvatarFallback>{String(post.authorId)[0]}</AvatarFallback>
+                    <AvatarImage src="/placeholder-user.jpg" alt={post.username} />
+                    <AvatarFallback>{post.username ? post.username[0] : "U"}</AvatarFallback>
                   </Avatar>
-                  <span>{post.authorId}</span>
+                  <span>{post.username}</span>
                 </div>
                 <span>{new Date(post.createdDate).toLocaleDateString()}</span>
                 <div className="flex items-center gap-1">
@@ -160,12 +158,12 @@ export default function PostDetailPage() {
               comments.map((c, index) => (
                 <div key={index} className="flex gap-3 p-4 border rounded-lg">
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src="/placeholder-user.jpg" alt={String(c.authorId)} />
-                    <AvatarFallback>{String(c.authorId)[0]}</AvatarFallback>
+                    <AvatarImage src="/placeholder-user.jpg" alt={c.username} />
+                    <AvatarFallback>{c.username ? c.username[0] : "?"}</AvatarFallback>
                   </Avatar>
                   <div className="flex flex-col gap-1 flex-1">
                     <div className="flex items-center justify-between">
-                      <span className="font-medium">{c.authorId}</span>
+                      <span className="font-medium">{c.username}</span>
                       <span className="text-xs text-muted-foreground">
                         {new Date(c.createdDate).toLocaleDateString()}
                       </span>

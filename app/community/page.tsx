@@ -43,6 +43,8 @@ export default function CommunityPage() {
     post.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  console.log(filteredPosts)
+
   return (
     <div className="container py-8">
       <div className="flex flex-col gap-6">
@@ -91,8 +93,7 @@ export default function CommunityPage() {
                       {post.category && <Badge variant="outline">{post.category}</Badge>}
                     </div>
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      {/* 작성자 정보가 이제 authorId */}
-                      <span>{post.authorId}</span>
+                      <span>{post.username}</span>
                       <span>{new Date(post.createdDate).toLocaleDateString()}</span>
                     </div>
                   </div>
