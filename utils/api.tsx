@@ -128,3 +128,34 @@ export async function createPost(
   }
   return res.json();
 }
+
+function authHeaders(): HeadersInit {
+  const token = localStorage.getItem("token");
+  return token
+    ? { Authorization: `Bearer ${token}` }
+    : {};
+}
+
+export async function fetchUserById(id: string) {
+  const res = await fetch(`${API_BASE_URL}/users/${id}`, {
+    headers: authHeaders()
+  });
+  if (!res.ok) throw new Error("Failed to fetch user");
+  return res.json();
+}
+
+export async function fetchUserPosts(id: string) {
+  const res = await fetch(`${API_BASE_URL}/users/${id}/posts`, {
+    headers: authHeaders()
+  });
+  if (!res.ok) throw new Error("Failed to fetch user posts");
+  return res.json();
+}
+
+export async function fetchUserComments(id: string) {
+  const res = await fetch(`${API_BASE_URL}/users/${id}/comments`, {
+    headers: authHeaders()
+  });
+  if (!res.ok) throw new Error("Failed to fetch user comments");
+  return res.json();
+}
