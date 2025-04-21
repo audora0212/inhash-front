@@ -24,7 +24,7 @@ export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
-  const { isLoggedIn, logout } = useAuth();
+  const { user, isLoggedIn, authLoading, logout } = useAuth();
 
   const handleNavClick = (href: string) => (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (href === "/jobs") {
@@ -110,8 +110,25 @@ export default function Header() {
         </nav>
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          <div className="hidden sm:flex items-center gap-2">
-            {!isLoggedIn ? (
+          <div className="hidden sm:flex items-center gap-4">
+            {authLoading ? (
+              <div className="h-6 w-6 animate-pulse rounded-full bg-gray-200" />
+            ) : isLoggedIn && user ? (
+              <>
+                <span className="text-sm font-medium">
+                  {user.username}님
+                </span>
+                <Button size="sm" onClick={logout}>
+                  로그아웃
+                </Button>
+                <Button variant="ghost" size="icon" asChild>
+                  <Link href="/profile">
+                    <User className="h-5 w-5" />
+                    <span className="sr-only">프로필</span>
+                  </Link>
+                </Button>
+              </>
+            ) : (
               <>
                 <Button variant="outline" size="sm" asChild>
                   <Link href="/login">로그인</Link>
@@ -120,20 +137,8 @@ export default function Header() {
                   <Link href="/register">회원가입</Link>
                 </Button>
               </>
-            ) : (
-              <Button size="sm" onClick={handleLogout}>
-                로그아웃
-              </Button>
             )}
           </div>
-          {isLoggedIn && (
-            <Button variant="ghost" size="icon" className="hidden sm:flex" asChild>
-              <Link href="/profile">
-                <User className="h-5 w-5" />
-                <span className="sr-only">프로필</span>
-              </Link>
-            </Button>
-          )}
         </div>
       </div>
     </header>
