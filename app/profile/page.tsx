@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -19,6 +19,12 @@ export default function ProfilePage() {
   const [posts, setPosts] = useState<any[]>([]);
   const [comments, setComments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Log posts and comments whenever they update
+  useEffect(() => {
+    console.log("Posts:", posts);
+    console.log("Comments:", comments);
+  }, [posts, comments]);
 
   useEffect(() => {
     if (!token || !user) return;
