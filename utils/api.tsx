@@ -159,3 +159,41 @@ export async function fetchUserComments(id: string) {
   if (!res.ok) throw new Error("Failed to fetch user comments");
   return res.json();
 }
+
+export async function updateUserProfile(
+  id: number,
+  data: { email: string; username: string; }
+) {
+  const res = await fetch(`${API_BASE_URL}/users/${id}`, {
+    method: "PUT",
+    headers: {
+      ...authHeaders(),
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(data)
+  });
+  if (!res.ok) {
+    const msg = await res.text();
+    throw new Error(msg || "Failed to update profile");
+  }
+  return res.json();
+}
+
+export async function updateUserPassword(
+  id: number,
+  data: { currentPassword: string; newPassword: string; }
+) {
+  const res = await fetch(`${API_BASE_URL}/users/${id}/password`, {
+    method: "PUT",
+    headers: {
+      ...authHeaders(),
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(data)
+  });
+  if (!res.ok) {
+    const msg = await res.text();
+    throw new Error(msg || "Failed to update password");
+  }
+  return;
+}
